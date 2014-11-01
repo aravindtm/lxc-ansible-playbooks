@@ -1,0 +1,15 @@
+---
+- debug: var=nginx_config_for_lxc_host_container_name
+
+- shell: lxc-ls --fancy | awk '$1 == "{{ nginx_config_for_lxc_host_container_name }}" {print $3}'
+  register: nginx_config_for_lxc_host_lxc_ls_result
+  changed_when: False
+
+- debug: var=nginx_config_for_lxc_host_lxc_ls_result
+
+- set_fact: nginx_config_for_lxc_host_container_ip_address={{ nginx_config_for_lxc_host_lxc_ls_result.stdout }}
+
+- debug: var=nginx_config_for_lxc_host_container_ip_address
+
+- template: src=proxy_to_container.conf.j2 dest=/etc/nginx/conf.d/{{ nginx_config_for_lxc_host_container_name }}.conf
+  notify: reload nginx

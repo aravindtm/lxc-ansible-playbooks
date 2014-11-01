@@ -1,0 +1,18 @@
+- hosts: containers
+  gather_facts: yes
+  sudo: yes
+  roles:
+  - role: apt_sources
+    tags: base
+  - role: apt_update
+    tags: base
+  - role: base_packages
+    tags: base
+  - role: ntp
+    tags: base
+  - role: sysstat
+    tags: base
+  - role: nginx
+    tags: nginx
+  - role: nginx_config_for_container
+    tags: nginx

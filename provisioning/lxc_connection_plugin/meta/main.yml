@@ -1,0 +1,13 @@
+---
+galaxy_info:
+  author: Hiroaki Nakamura
+  description: Install Ansible connection plugin for lxc containers.
+  license: MIT
+  min_ansible_version: 1.2
+  platforms:
+  - name: GenericUNIX
+    versions:
+    - all
+  categories:
+  - system
+dependencies: []

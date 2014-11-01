@@ -1,0 +1,16 @@
+---
+galaxy_info:
+  author: Hiroaki Nakamura
+  description: Gather fact for Python site-package directory path
+  license: MIT
+  min_ansible_version: 1.2
+  platforms:
+  - name: GenericUNIX
+    versions:
+    - all
+  - name: Ubuntu
+    versions:
+    - trusty
+  categories:
+  - system
+dependencies: []

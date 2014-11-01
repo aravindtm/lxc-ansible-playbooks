@@ -1,0 +1,21 @@
+---
+- apt_key: url=http://nginx.org/keys/nginx_signing.key state=present
+
+- apt_repository: repo='deb {{ nginx_stable_repo_base_url }}/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release }} nginx' state={{ nginx_stable_state }}
+  register: nginx_stable_repo
+
+- apt_repository: repo='deb-src {{ nginx_stable_repo_base_url }}/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release }} nginx' state={{ nginx_stable_state }}
+
+- apt_repository: repo='deb {{ nginx_mainline_repo_base_url }}/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release }} nginx' state={{ nginx_mainline_state }}
+  register: nginx_mainline_repo
+
+- apt_repository: repo='deb-src {{ nginx_mainline_repo_base_url }}/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release }} nginx' state={{ nginx_mainline_state }}
+
+- apt: update_cache=yes cache_valid_time=0
+  when: nginx_stable_repo|changed or nginx_mainline_repo|changed
+
+# NOTE: Uninstall and then reinstall nginx when nginx_branch is changed between stable and mainline.
+- apt: name=nginx state=absent
+  when: nginx_stable_repo|changed or nginx_mainline_repo|changed
+
+- apt: name=nginx state=present

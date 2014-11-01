@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  author: Hiroaki Nakamura
+  description: Create lxc container
+  license: MIT
+  min_ansible_version: 1.2
+  platforms:
+  - name: Ubuntu
+    versions:
+    - trusty
+  categories:
+  - system
+dependencies:
+- lxc

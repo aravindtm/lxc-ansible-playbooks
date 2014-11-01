@@ -1,0 +1,17 @@
+---
+- command: lxc-ls -1
+  register: lxc_container_lxc_ls
+  changed_when: False
+
+- command: lxc-create -t download -n {{ lxc_container_name }} -- -d {{ lxc_container_distribution }} -r {{ lxc_container_release }} -a {{ lxc_container_architecture }}
+  when: lxc_container_lxc_ls.stdout.find(lxc_container_name) == -1
+
+- command: lxc-start -dn {{ lxc_container_name }}
+
+- shell: lxc-ls --fancy | awk '$1 == "{{ lxc_container_name }}" { print $2 }'
+  register: lxc_container_running
+  until: lxc_container_running.stdout == "RUNNING"
+  retries: 5
+  delay: 1
+
+- command: lxc-attach -n {{ lxc_container_name }} -- sudo apt-get install -y python

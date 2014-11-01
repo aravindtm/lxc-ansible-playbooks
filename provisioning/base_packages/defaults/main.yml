@@ -1,0 +1,6 @@
+---
+base_packages_packages:
+- traceroute
+- curl
+- vim
+- git

@@ -1,0 +1,48 @@
+- hosts: localhost
+  connection: local
+  gather_facts: yes
+  sudo: yes
+  vars:
+    lxc_container_distribution: ubuntu
+    lxc_container_release: trusty
+    lxc_container_architecture: amd64
+    containers:
+    - name: container1
+      virtualhost: c1.192.168.33.2.xip.io
+    - name: container2
+      virtualhost: c2.192.168.33.2.xip.io
+  roles:
+  - role: apt_sources
+    tags: base
+  - role: apt_update
+    tags: base
+  - role: base_packages
+    tags: base
+  - role: ntp
+    tags: base
+  - role: sysstat
+    tags: base
+  - role: lxc
+    tags: lxc
+  - role: python_fact
+    tags: lxc
+  - role: python2_lxc
+    tags: lxc
+  - role: lxc_connection_plugin
+    tags: lxc
+  - role: nginx
+    tags: nginx
+  - role: lxc_container
+    lxc_container_name: "{{ containers[0].name }}"
+    tags: lxc_container
+  - role: lxc_container
+    lxc_container_name: "{{ containers[1].name }}"
+    tags: lxc_container
+  - role: nginx_config_for_lxc_host
+    nginx_config_for_lxc_host_container_name: "{{ containers[0].name }}"
+    nginx_config_for_lxc_host_container_virtualhost: "{{ containers[0].virtualhost }}"
+    tags: lxc_container
+  - role: nginx_config_for_lxc_host
+    nginx_config_for_lxc_host_container_name: "{{ containers[1].name }}"
+    nginx_config_for_lxc_host_container_virtualhost: "{{ containers[1].virtualhost }}"
+    tags: lxc_container

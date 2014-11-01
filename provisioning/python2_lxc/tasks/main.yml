@@ -1,0 +1,12 @@
+---
+- apt: name=lxc-dev state=present
+
+- git: repo=https://github.com/lxc/python2-lxc dest={{ python2_lxc_src_dir }}
+
+- command: python setup.py build
+    chdir={{ python2_lxc_src_dir }}
+    creates={{ python2_lxc_src_dir }}/build
+
+- command: python setup.py install
+    chdir={{ python2_lxc_src_dir }}
+    creates={{ python_fact_site_package }}/lxc

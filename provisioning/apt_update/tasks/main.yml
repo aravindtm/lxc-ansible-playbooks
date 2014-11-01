@@ -1,0 +1,4 @@
+---
+- apt: name=aptitude state=present
+
+- apt: update_cache=yes upgrade=safe cache_valid_time={{ apt_cache_valid_time }}
