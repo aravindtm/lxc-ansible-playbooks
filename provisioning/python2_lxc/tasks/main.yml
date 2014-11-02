@@ -1,5 +1,6 @@
 ---
 - apt: name=lxc-dev state=present
+  when: ansible_os_family == "Debian"
 
 - git: repo=https://github.com/lxc/python2-lxc dest={{ python2_lxc_src_dir }}
 
