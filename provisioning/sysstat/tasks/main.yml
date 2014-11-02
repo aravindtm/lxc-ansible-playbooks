@@ -3,7 +3,7 @@
   sudo: yes
   when: ansible_os_family == "Debian"
 
-- copy: src=/sysstat.default dest=/etc/default/sysstat
+- copy: src=Debian/sysstat.default dest=/etc/default/sysstat
   sudo: yes
   when: ansible_os_family == "Debian"
 
