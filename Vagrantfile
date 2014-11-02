@@ -13,10 +13,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.provision "shell", path: "install_ansible.sh"
-
-  # NOTE: Enable this line to run the provisioning on the lxc host with vagrant up.
-  # However I recommend you to run this command manually after vagrant ssh, since
-  # you can see outputs as provision is progressing.
-  #config.vm.provision "shell", inline: "cd /vagrant/provisioning && ansible-playbook lxc_host.yml"
-  #config.vm.provision "shell", inline: "cd /vagrant/provisioning && ansible-playbook containers.yml"
+  config.vm.provision "shell", path: "setup_lxc_host.sh"
+  config.vm.provision "shell", path: "setup_containers.sh"
 end
