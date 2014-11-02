@@ -15,3 +15,7 @@
   delay: 1
 
 - command: lxc-attach -n {{ lxc_container_name }} -- sudo apt-get install -y python
+  register: lxc_container_install_python
+  until: lxc_container_install_python.rc == 0
+  retries: 5
+  delay: 5
