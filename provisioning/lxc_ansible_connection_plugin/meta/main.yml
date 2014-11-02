@@ -5,9 +5,12 @@ galaxy_info:
   license: MIT
   min_ansible_version: 1.2
   platforms:
-  - name: GenericUNIX
+  - name: EL
     versions:
-    - all
+    - 6
+  - name: Ubuntu
+    versions:
+    - trusty
   categories:
   - system
 dependencies: []

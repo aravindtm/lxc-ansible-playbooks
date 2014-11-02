@@ -1,0 +1,2 @@
+---
+lxc_ansible_connection_plugins_standard_dir: /usr/lib/python2.6/site-packages/ansible/runner/connection_plugins
