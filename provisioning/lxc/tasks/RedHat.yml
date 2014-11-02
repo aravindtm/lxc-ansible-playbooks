@@ -1,0 +1,58 @@
+---
+- yum: name={{ item }} state=present
+  sudo: yes
+  with_items:
+  - libcap-devel
+  - docbook2X
+  - graphviz
+  - bridge-utils
+
+- file: path={{ lxc_tarball_path|dirname }} state=directory
+  sudo: yes
+
+- get_url: url={{ lxc_tarball_url }} dest={{ lxc_tarball_path }} sha256sum={{ lxc_tarball_sha256sum }}
+  sudo: yes
+
+- file: path={{ lxc_unarchive_dir }} state=directory
+  sudo: yes
+
+- unarchive: src={{ lxc_tarball_path }} dest={{ lxc_unarchive_dir }}
+    creates={{ lxc_src_dir }}
+  sudo: yes
+
+- file: path={{ lxc_build_dir }}/{{ item }} state=directory owner={{ ansible_user_id }}
+  sudo: yes
+  with_items:
+  - SOURCES
+  - BUILD
+  - BUILDROOT
+  - SPECS
+  - RPMS
+  - SRPMS
+
+- command: cp {{ lxc_src_dir }}/lxc.spec {{ lxc_build_dir }}/SPECS/
+    creates={{ lxc_build_dir }}/SPECS/lxc.spec
+  sudo: no
+
+- command: cp {{ lxc_tarball_path }} {{ lxc_build_dir }}/SOURCES/
+    creates={{ lxc_build_dir }}/SOURCES/{{ lxc_tarball_filename }}
+  sudo: no
+
+- command: rpmbuild -D "_topdir {{ lxc_build_dir }}" -bb {{ lxc_build_dir }}/SPECS/lxc.spec
+    creates="{{ lxc_build_dir }}/RPMS/{{ ansible_architecture }}"
+  sudo: no
+
+- yum: name={{ item }} state=present
+  sudo: yes
+  with_fileglob:
+  - "{{ lxc_build_dir }}/RPMS/{{ ansible_architecture }}/lxc-libs-{{ lxc_version }}-*.rpm"
+
+- yum: name={{ item }} state=present
+  sudo: yes
+  with_fileglob:
+  - "{{ lxc_build_dir }}/RPMS/{{ ansible_architecture }}/lxc-{{ lxc_version }}-*.rpm"
+
+- yum: name={{ item }} state=present
+  sudo: yes
+  with_fileglob:
+  - "{{ lxc_build_dir }}/RPMS/{{ ansible_architecture }}/lxc-devel-{{ lxc_version }}-*.rpm"

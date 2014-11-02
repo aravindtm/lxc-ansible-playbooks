@@ -1,2 +1,12 @@
 ---
-- apt: name=lxc state=present
+- include_vars: "{{ item }}"
+  with_first_found:
+  - "../vars/{{ ansible_distribution }}.yml"
+  - "../vars/{{ ansible_os_family }}.yml"
+  - "../vars/default.yml"
+
+- include: Debian.yml
+  when: ansible_os_family == "Debian"
+
+- include: RedHat.yml
+  when: ansible_os_family == "RedHat"
