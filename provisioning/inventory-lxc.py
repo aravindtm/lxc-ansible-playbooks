@@ -19,16 +19,20 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
 from subprocess import Popen,PIPE
+import distutils.spawn
 import sys
 import json
 
 result = {}
-result['containers'] = {}
 
-pipe = Popen(['lxc-ls', '-1'], stdout=PIPE, universal_newlines=True)
-result['containers']['hosts'] = [x[:-1] for x in pipe.stdout.readlines()]
-result['containers']['vars'] = {}
-result['containers']['vars']['ansible_connection'] = 'lxc'
+# NOTE: When you run ansible-playbook for the first time on the lxc host,
+# lxc is not yet installed. So we skip building containers list.
+if distutils.spawn.find_executable('lxc-ls'):
+    result['containers'] = {}
+    pipe = Popen(['lxc-ls', '-1'], stdout=PIPE, universal_newlines=True)
+    result['containers']['hosts'] = [x[:-1] for x in pipe.stdout.readlines()]
+    result['containers']['vars'] = {}
+    result['containers']['vars']['ansible_connection'] = 'lxc'
 
 result['local'] = {}
 result['local']['hosts'] = ['localhost']
