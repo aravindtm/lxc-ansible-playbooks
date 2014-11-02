@@ -1,6 +1,0 @@
----
-- command: python -c "import site; print(site.getsitepackages()[0])"
-  register: python_fact_site_package_result
-  changed_when: False
-
-- set_fact: python_fact_site_package={{ python_fact_site_package_result.stdout }}
