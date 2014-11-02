@@ -1,21 +1,14 @@
 - hosts: localhost
   connection: local
   gather_facts: yes
-  sudo: yes
+  sudo: no
   vars:
-    lxc_container_distribution: ubuntu
-    lxc_container_release: trusty
-    lxc_container_architecture: amd64
     containers:
     - name: container1
       virtualhost: c1.192.168.33.2.xip.io
     - name: container2
       virtualhost: c2.192.168.33.2.xip.io
   roles:
-  - role: apt_sources
-    tags: base
-  - role: apt_update
-    tags: base
   - role: base_packages
     tags: base
   - role: ntp
@@ -24,25 +17,29 @@
     tags: base
   - role: lxc
     tags: lxc
-  - role: python_fact
-    tags: lxc
-  - role: python2_lxc
-    tags: lxc
-  - role: lxc_connection_plugin
+  - role: lxc_ansible_connection_plugin
     tags: lxc
   - role: lxc_container
     lxc_container_name: "{{ containers[0].name }}"
+    lxc_container_create_options: "-d centos -r 6 -a amd64"
+    when: ansible_os_family == "RedHat"
+  - role: lxc_container
+    lxc_container_name: "{{ containers[0].name }}"
+    lxc_container_create_options: "-d ubuntu -r trusty -a amd64"
+    when: ansible_os_family == "Debian"
     tags: lxc_container
   - role: lxc_container
     lxc_container_name: "{{ containers[1].name }}"
+    lxc_container_create_options: "-d ubuntu -r trusty -a amd64"
+    when: ansible_os_family == "Debian"
     tags: lxc_container
-  - role: nginx
-    tags: nginx
-  - role: nginx_config_for_lxc_host
-    nginx_config_for_lxc_host_container_name: "{{ containers[0].name }}"
-    nginx_config_for_lxc_host_container_virtualhost: "{{ containers[0].virtualhost }}"
-    tags: nginx
-  - role: nginx_config_for_lxc_host
-    nginx_config_for_lxc_host_container_name: "{{ containers[1].name }}"
-    nginx_config_for_lxc_host_container_virtualhost: "{{ containers[1].virtualhost }}"
-    tags: nginx
+#  - role: nginx
+#    tags: nginx
+#  - role: nginx_config_for_lxc_host
+#    nginx_config_for_lxc_host_container_name: "{{ containers[0].name }}"
+#    nginx_config_for_lxc_host_container_virtualhost: "{{ containers[0].virtualhost }}"
+#    tags: nginx
+#  - role: nginx_config_for_lxc_host
+#    nginx_config_for_lxc_host_container_name: "{{ containers[1].name }}"
+#    nginx_config_for_lxc_host_container_virtualhost: "{{ containers[1].virtualhost }}"
+#    tags: nginx
