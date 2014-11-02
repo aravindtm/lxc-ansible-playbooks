@@ -1,11 +1,15 @@
 ---
 - template: src=sources.list.j2 dest=/etc/apt/sources.list
+  sudo: yes
 
 - apt: name=aptitude state=present
+  sudo: yes
   when: base_packages_updates_all
 
 - apt: update_cache=yes upgrade=safe cache_valid_time={{ apt_cache_valid_time }}
+  sudo: yes
   when: base_packages_updates_all
 
 - apt: name={{ item }} state=present
+  sudo: yes
   with_items: base_packages_packages
