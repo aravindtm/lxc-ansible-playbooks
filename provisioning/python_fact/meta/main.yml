@@ -1,0 +1,13 @@
+---
+galaxy_info:
+  author: Hiroaki Nakamura
+  description: Set python major and minor version to a fact
+  license: MIT
+  min_ansible_version: 1.2
+  platforms:
+  - name: GenericUNIX
+    versions:
+    - all
+  categories:
+  - system
+dependencies: []

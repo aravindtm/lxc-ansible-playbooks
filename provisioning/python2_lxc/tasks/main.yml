@@ -1,13 +1,27 @@
 ---
+- include_vars: "{{ item }}"
+  with_first_found:
+  - "../vars/{{ ansible_distribution }}.yml"
+  - "../vars/{{ ansible_os_family }}.yml"
+  - "../vars/default.yml"
+
 - apt: name=lxc-dev state=present
+  sudo: yes
   when: ansible_os_family == "Debian"
 
+- yum: name=lxc-devel state=present
+  sudo: yes
+  when: ansible_os_family == "RedHat"
+
 - git: repo=https://github.com/lxc/python2-lxc dest={{ python2_lxc_src_dir }}
+  sudo: yes
 
 - command: python setup.py build
     chdir={{ python2_lxc_src_dir }}
     creates={{ python2_lxc_src_dir }}/build
+  sudo: yes
 
 - command: python setup.py install
     chdir={{ python2_lxc_src_dir }}
-    creates={{ python_fact_site_package }}/lxc
+    creates={{ python2_lxc_install_dir }}
+  sudo: yes

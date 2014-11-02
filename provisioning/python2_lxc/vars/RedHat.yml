@@ -1,0 +1,2 @@
+---
+python2_lxc_install_dir: /usr/lib64/python{{ python_fact_major_minor_version }}/site-packages/lxc
