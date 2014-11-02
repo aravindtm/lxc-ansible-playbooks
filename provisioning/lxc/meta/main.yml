@@ -14,5 +14,4 @@ galaxy_info:
   categories:
   - system
 dependencies:
-- role: rpmbuild
-  when: ansible_os_family == "RedHat"
+- base_packages
