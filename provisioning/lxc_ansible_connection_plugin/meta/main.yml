@@ -13,4 +13,5 @@ galaxy_info:
     - trusty
   categories:
   - system
-dependencies: []
+dependencies:
+- python2_lxc
