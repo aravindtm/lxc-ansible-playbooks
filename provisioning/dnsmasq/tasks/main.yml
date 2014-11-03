@@ -2,7 +2,7 @@
 - yum: name=dnsmasq state=present
   sudo: yes
 
-- file: src=dnsmasq.conf dest=/etc/dnsmasq.conf
+- copy: src=dnsmasq.conf dest=/etc/dnsmasq.conf
   sudo: yes
   notify: reload dnsmasq
 
