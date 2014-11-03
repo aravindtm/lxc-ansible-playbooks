@@ -1,1 +1,23 @@
 ---
+- apt: name=iptables-persistent state=present
+  register: firewall_iptables_installed
+  sudo: yes
+
+- shell: iptables-save > /etc/iptables/rules.v4.default
+    creates=/etc/iptables/rules.v4.default
+  sudo: yes
+
+- shell: ip6tables-save > /etc/iptables/rules.v6.default
+    creates=/etc/iptables/rules.v6.default
+  sudo: yes
+
+- command: iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT
+  sudo: yes
+  when: firewall_iptables_installed|changed
+
+- command: service iptables-persistent save
+  sudo: yes
+  when: firewall_iptables_installed|changed
+
+- service: name=iptables-persistent state=started enabled=yes
+  sudo: yes
