@@ -1,26 +1,29 @@
 ---
 - command: lxc-ls -1
   sudo: yes
-  register: lxc_container_lxc_ls
+  register: lxc_container_list
   changed_when: False
+
+- set_fact: lxc_container_did_exist={{ lxc_container_name in lxc_container_list.stdout_lines }}
 
 - command: lxc-create -t download -n {{ lxc_container_name }} -- {{ lxc_container_create_options }}
   sudo: yes
-  when: lxc_container_lxc_ls.stdout.find(lxc_container_name) == -1
+  when: not lxc_container_did_exist
 
 - command: lxc-start -dn {{ lxc_container_name }}
   sudo: yes
 
-- shell: lxc-ls --fancy | awk '$1 == "{{ lxc_container_name }}" { print $2 }'
+- command: lxc-ls --active -1
   sudo: yes
   register: lxc_container_running
-  until: lxc_container_running.stdout == "RUNNING"
+  until: lxc_container_running.stdout.find(lxc_container_name) != -1
   retries: 5
   delay: 1
+  changed_when: False
 
 - command: lxc-attach -n {{ lxc_container_name }} -- sudo apt-get install -y python
   sudo: yes
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian" and not lxc_container_did_exist
   register: lxc_container_install_python
   until: lxc_container_install_python.rc == 0
   retries: 5
