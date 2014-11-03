@@ -1,25 +1,42 @@
 ---
-- file: path={{ item }} state=directory
-  sudo: yes
-  with_items:
-  - /var/lib/lxc
-  - /var/run/lxc
+- command: ip a show dev {{ lxc_bridge_name }}
+  register: lxc_bridge_existence_check
+  changed_when: False
+  failed_when: lxc_bridge_existence_check.rc not in [0, 255]
 
-- template: src=RedHat/lxc-net.sysconfig.j2 dest=/etc/sysconfig/lxc-net
-  sudo: yes
-  register: lxc_net_sysconfig
+- debug: var=lxc_bridge_existence_check
 
-- template: src=RedHat/lxc-net.init.j2 dest=/etc/init.d/lxc-net mode=0755
-  sudo: yes
-  register: lxc_net_initscript
+- set_fact: lxc_bridge_did_exist={{ lxc_bridge_existence_check.rc == 0 }}
 
-- service: name=lxc-net state=started enabled=yes
-  sudo: yes
+- debug: var=lxc_bridge_did_exist
 
-- shell: service lxc-net stop && service lxc-net start
+- template: src=RedHat/ifcfg-lxcbr0.j2 dest=/etc/sysconfig/network-scripts/ifcfg-{{ lxc_bridge_name }}
   sudo: yes
-  when: lxc_net_sysconfig|changed or lxc_net_initscript|changed
+  when: not lxc_bridge_did_exist
+
+- command: brctl addbr {{ lxc_bridge_name }}
+  sudo: yes
+  when: not lxc_bridge_did_exist
+
+- command: ifconfig {{ lxc_bridge_name }} {{ lxc_bridge_addr }} netmask {{ lxc_bridge_netmask }} up
+  sudo: yes
+  when: not lxc_bridge_did_exist
+
+- shell: >
+    iptables -t nat -A POSTROUTING -o {{ lxc_bridge_out_if }} -s {{ lxc_bridge_network }} -j MASQUERADE && \
+    iptables -I INPUT -i {{ lxc_bridge_name }} -p tcp --dport 53 -j ACCEPT && \
+    iptables -I INPUT -i {{ lxc_bridge_name }} -p udp --dport 53 -j ACCEPT && \
+    iptables -I INPUT -i {{ lxc_bridge_name }} -p udp --sport 67:68 --dport 67:68 -j ACCEPT && \
+    iptables -I FORWARD -o {{ lxc_bridge_out_if }} -j ACCEPT && \
+    iptables -I FORWARD -i {{ lxc_bridge_out_if }} -j ACCEPT && \
+    iptables-save > /etc/sysconfig/iptables
+  sudo: yes
+  when: not lxc_bridge_did_exist
+
+- service: name=iptables state=restarted
+  sudo: yes
+  when: not lxc_bridge_did_exist
 
 - service: name=dnsmasq state=restarted
   sudo: yes
-  when: lxc_net_sysconfig|changed or lxc_net_initscript|changed
+  when: not lxc_bridge_did_exist

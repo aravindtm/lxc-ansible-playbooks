@@ -1,3 +1,8 @@
 ---
 lxc_bridge_name: lxcbr0
 lxc_dnsmasq_dhcp_range: 10.0.3.50,10.0.3.250
+lxc_bridge_addr: 10.0.3.1
+lxc_bridge_broadcast: 10.0.3.255
+lxc_bridge_netmask: 255.255.255.0
+lxc_bridge_network: "10.0.3.0/24"
+lxc_bridge_out_if: eth0
