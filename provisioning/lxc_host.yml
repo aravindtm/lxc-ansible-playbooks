@@ -34,8 +34,8 @@
     lxc_container_create_options: "-d ubuntu -r trusty -a amd64"
     when: ansible_os_family == "Debian"
     tags: lxc_container
-#  - role: nginx
-#    tags: nginx
+  - role: nginx
+    tags: nginx
 #  - role: nginx_config_for_lxc_host
 #    nginx_config_for_lxc_host_container_name: "{{ containers[0].name }}"
 #    nginx_config_for_lxc_host_container_virtualhost: "{{ containers[0].virtualhost }}"

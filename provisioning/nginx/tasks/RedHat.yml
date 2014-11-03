@@ -1,0 +1,12 @@
+---
+- template: src=RedHat/nginx.repo.j2 dest=/etc/yum.repos.d/nginx.repo
+  sudo: yes
+
+- rpm_key: key={{ nginx_signing_key_url }} state=present
+  sudo: yes
+
+- yum: name=nginx state=present
+  sudo: yes
+
+- service: name=nginx state=started enabled=yes
+  sudo: yes

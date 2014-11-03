@@ -1,0 +1,5 @@
+[nginx]
+name=nginx repo
+baseurl={% if nginx_branch == "mainline" %}{{ nginx_mainline_repo_base_url }}{% else %}{{ nginx_stable_repo_base_url }}{% endif %}/{{ nginx_repo_url_os }}/{{ ansible_distribution_major_version }}/$basearch/
+gpgcheck=0
+enabled=1

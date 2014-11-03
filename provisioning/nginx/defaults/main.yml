@@ -3,5 +3,5 @@
 nginx_branch: stable
 nginx_stable_repo_base_url: http://nginx.org/packages
 nginx_mainline_repo_base_url: http://nginx.org/packages/mainline
-nginx_stable_state: "{% if nginx_branch == 'stable' %}present{% else %}absent{% endif %}"
-nginx_mainline_state: "{% if nginx_branch == 'mainline' %}present{% else %}absent{% endif %}"
+nginx_repo_base_url: "{% if nginx_branch == 'mainline' %}{{ nginx_mainline_repo_base_url }}{% else %}{{ nginx_stable_repo_base_url }}{% endif %}"
+nginx_signing_key_url: http://nginx.org/keys/nginx_signing.key
