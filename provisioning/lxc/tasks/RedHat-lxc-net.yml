@@ -1,0 +1,19 @@
+---
+- file: path={{ item }} state=directory
+  sudo: yes
+  with_items:
+  - /var/lib/lxc
+  - /var/run/lxc
+
+- template: src=RedHat/lxc-net.sysconfig.j2 dest=/etc/sysconfig/lxc-net
+  sudo: yes
+  notify:
+  - restart lxc-net
+
+- template: src=RedHat/lxc-net.init.j2 dest=/etc/init.d/lxc-net mode=0755
+  sudo: yes
+  notify:
+  - restart lxc-net
+
+- service: name=lxc-net state=started
+#- service: name=lxc-net state=started enabled=yes

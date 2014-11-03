@@ -1,0 +1,107 @@
+# /bin/sh
+
+# lxc-net       Bring up/down network for lxc
+#
+# chkconfig: 2345 11 89
+# description: Activates/Deactivates network interfaces configured for lxc
+#
+### BEGIN INIT INFO
+# Provides: $network
+# Short-Description: Bring up/down lxc networking
+# Description: Bring up/down lxc networking
+### END INIT INFO
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+LXC_BRIDGE="{{ lxc_bridge_name }}"
+LXC_ADDR="10.0.3.1"
+LXC_NETMASK="255.255.255.0"
+LXC_NETWORK="10.0.3.0/24"
+LXC_OUT_IF="eth0"
+varrun="/var/run/lxc"
+
+if [ -f /etc/sysconfig/lxc-net ]; then
+  . /etc/sysconfig/lxc-net
+fi
+
+setup_network() {
+  brctl addbr ${LXC_BRIDGE}
+  ifconfig ${LXC_BRIDGE} ${LXC_ADDR} netmask ${LXC_NETMASK} up
+  iptables -t nat -A POSTROUTING -o ${LXC_OUT_IF} -s ${LXC_NETWORK} -j MASQUERADE
+  iptables -I INPUT -i ${LXC_BRIDGE} -p tcp --dport 53 -j ACCEPT
+  iptables -I INPUT -i ${LXC_BRIDGE} -p udp --dport 53 -j ACCEPT
+  iptables -I INPUT -i ${LXC_BRIDGE} -p udp --sport 67:68 --dport 67:68 -j ACCEPT
+  iptables -I FORWARD -o ${LXC_OUT_IF} -j ACCEPT
+  iptables -I FORWARD -i ${LXC_OUT_IF} -j ACCEPT
+}
+
+teardown_network() {
+  ifconfig ${LXC_BRIDGE} down
+  # dnsmasq failed to start, clean up the bridge
+  iptables -t nat -D POSTROUTING -o ${LXC_OUT_IF} -s ${LXC_NETWORK} -j MASQUERADE
+  iptables -D INPUT -i ${LXC_BRIDGE} -p tcp --dport 53 -j ACCEPT
+  iptables -D INPUT -i ${LXC_BRIDGE} -p udp --dport 53 -j ACCEPT
+  iptables -D INPUT -i ${LXC_BRIDGE} -p udp --sport 67:68 --dport 67:68 -j ACCEPT
+  iptables -D FORWARD -o ${LXC_OUT_IF} -j ACCEPT
+  iptables -D FORWARD -i ${LXC_OUT_IF} -j ACCEPT
+  ifconfig ${LXC_BRIDGE} down
+  brctl delbr ${LXC_BRIDGE}
+}
+
+start() {
+  if [ -d /sys/class/net/${LXC_BRIDGE} ]; then
+    if [ ! -f ${varrun}/network_up ]; then
+      # bridge exists, but we didn't start it
+      exit 0
+    fi
+    exit 0
+  fi
+
+  # set up the lxc network
+  setup_network
+  touch ${varrun}/network_up
+}
+
+stop() {
+  [ -f "${varrun}/network_up" ] || exit 0
+
+  # if $LXC_BRIDGE has attached interfaces, don't shut it down
+  [ -t "$(find /sys/class/net/${LXC_BRIDGE}/brif/ -mindepth 1 -print -quit)" ] && exit 0
+
+  if [ -d /sys/class/net/${LXC_BRIDGE} ]; then
+    teardown_network
+  fi
+  rm -f ${varrun}/network_up
+}
+
+status() {
+  if [ -f ${varrun}/network_up ]; then
+    echo $0 is up
+  else
+    echo $0 is down
+  fi
+}
+
+rc=0
+
+case "$1" in
+start)
+  start
+  ;;
+stop)
+  stop
+  ;;
+status)
+  status
+  ;;
+restart)
+  stop
+  start
+  ;;
+*)
+  echo $"Usage: $0 {start|stop|status|restart}"
+  exit 2
+esac
+
+exit $rc

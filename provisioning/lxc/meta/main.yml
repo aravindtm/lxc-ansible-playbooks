@@ -15,3 +15,5 @@ galaxy_info:
   - system
 dependencies:
 - base_packages
+- role: dnsmasq
+  when: ansible_os_family == "RedHat"

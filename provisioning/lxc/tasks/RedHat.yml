@@ -7,3 +7,30 @@
   - lxc-templates
   - bridge-utils
   - libcgroup
+  - dnsmasq
+
+- sysctl: name=net.ipv4.ip_forward value=1 state=present
+  sudo: yes
+
+- template: src=RedHat/lxc.default.conf.j2 dest=/etc/lxc/default.conf
+  sudo: yes
+
+- service: name=cgconfig state=started enabled=yes
+  sudo: yes
+
+- service: name=cgred state=started enabled=yes
+  sudo: yes
+
+- template: src=RedHat/dnsmasq.lxc.conf.j2 dest=/etc/dnsmasq.d/lxc.conf
+  sudo: yes
+  notify: reload dnsmasq
+
+- template: src=RedHat/dhclient-eth0.conf.j2 dest=/etc/dhcp/dhclient-eth0.conf
+  sudo: yes
+  notify:
+  - restart eth0
+
+- copy: src=RedHat/ifcfg-lxcbr0 dest=/etc/sysconfig/network-scripts/ifcfg-{{ lxc_bridge_name }}
+  sudo: yes
+
+- include: RedHat-lxc-net.yml
