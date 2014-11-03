@@ -1,0 +1,4 @@
+---
+- name: restart lxc-net
+  sudo: yes
+  shell: service lxc-net stop && serivice lxc-net start

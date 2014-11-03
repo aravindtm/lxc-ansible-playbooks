@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  author: Hiroaki Nakamura
+  description: Install Ansible connection plugin for lxc containers.
+  license: MIT
+  min_ansible_version: 1.2
+  platforms:
+  - name: EL
+    versions:
+    - 6
+  - name: Ubuntu
+    versions:
+    - trusty
+  categories:
+  - system
+dependencies:
+- python2_lxc

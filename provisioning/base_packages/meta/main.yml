@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: Hiroaki Nakamura
-  description: Install base packages
+  description: Setup basic package repositories and install base packages
   license: MIT
   min_ansible_version: 1.2
   platforms:
@@ -9,6 +9,9 @@ galaxy_info:
     versions:
     - all
   - name: Debian
+    versions:
+    - all
+  - name: CentOS
     versions:
     - all
   categories:

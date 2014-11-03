@@ -1,0 +1,14 @@
+---
+- command: cp -p /etc/sysconfig/iptables /etc/sysconfig/iptables.default
+    creates=/etc/sysconfig/iptables.default
+  sudo: yes
+
+- lineinfile: dest=/etc/sysconfig/iptables
+              line="-A INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT"
+              insertbefore="-A INPUT -j REJECT --reject-with icmp-host-prohibited"
+  sudo: yes
+  register: firewall_http
+
+- shell: iptables-restore < /etc/sysconfig/iptables
+  sudo: yes
+  when: firewall_http|changed

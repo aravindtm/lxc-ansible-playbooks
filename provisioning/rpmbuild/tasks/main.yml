@@ -1,0 +1,10 @@
+---
+- yum: name="@Development Tools" state=present
+  sudo: yes
+
+- yum: name={{ item }} state=present
+  sudo: yes
+  with_items:
+  - rpm-build 
+  - yum-utils
+  - rpmdevtools 

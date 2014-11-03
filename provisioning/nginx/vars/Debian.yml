@@ -1,0 +1,3 @@
+---
+nginx_stable_state: "{% if nginx_branch == 'stable' %}present{% else %}absent{% endif %}"
+nginx_mainline_state: "{% if nginx_branch == 'mainline' %}present{% else %}absent{% endif %}"

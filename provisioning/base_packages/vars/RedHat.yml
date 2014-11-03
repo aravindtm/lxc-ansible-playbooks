@@ -1,0 +1,12 @@
+---
+base_packages_updates_all: true
+base_packages_packages:
+- traceroute
+- curl
+- wget
+- vim-enhanced
+- git
+- tar
+- gzip
+- bzip2
+- xz

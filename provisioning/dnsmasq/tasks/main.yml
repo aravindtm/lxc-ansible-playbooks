@@ -1,0 +1,10 @@
+---
+- yum: name=dnsmasq state=present
+  sudo: yes
+
+- copy: src=dnsmasq.conf dest=/etc/dnsmasq.conf
+  sudo: yes
+  notify: reload dnsmasq
+
+- service: name=dnsmasq state=started enabled=yes
+  sudo: yes

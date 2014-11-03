@@ -1,0 +1,11 @@
+---
+- yum: name=epel-release state=present
+  sudo: yes
+
+- yum: name=* state=latest
+  sudo: yes
+  when: base_packages_updates_all
+
+- yum: name={{ item }} state=present
+  sudo: yes
+  with_items: base_packages_packages

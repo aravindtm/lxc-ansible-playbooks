@@ -1,6 +1,0 @@
----
-- file: path=/etc/ansible/connection_plugins state=directory
-
-- git: repo=https://github.com/Mic92/ansible-lxc dest=/etc/ansible/connection_plugins/lxc
-
-- lineinfile: dest=/etc/ansible/ansible.cfg line="connection_plugins = {{ python_fact_site_package }}/ansible/runner/connection_plugins:/etc/ansible/connection_plugins/lxc" create=no

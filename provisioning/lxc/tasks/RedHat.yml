@@ -1,0 +1,43 @@
+---
+# NOTE: Comment out unknown keys in /etc/sysctl.conf to avoid these errors
+# ==> default: error: "net.bridge.bridge-nf-call-ip6tables" is an unknown key
+# ==> default: error: "net.bridge.bridge-nf-call-iptables" is an unknown key
+# ==> default: error: "net.bridge.bridge-nf-call-arptables" is an unknown key
+- command: sed -ie 's/^net\.bridge\.bridge-nf-call-ip6tables/#&/;s/^net\.bridge\.bridge-nf-call-iptables/#&/;s/^net\.bridge\.bridge-nf-call-arptables/#&/' /etc/sysctl.conf
+  sudo: yes
+
+- sysctl: name=net.ipv4.ip_forward value=1 state=present
+  sudo: yes
+
+- yum: name={{ item }} state=present
+  sudo: yes
+  with_items:
+  - lxc
+  - lxc-libs
+  - lxc-templates
+  - bridge-utils
+  - libcgroup
+  - dnsmasq
+
+- template: src=RedHat/lxc.default.conf.j2 dest=/etc/lxc/default.conf
+  sudo: yes
+
+- service: name=cgconfig state=started enabled=yes
+  sudo: yes
+
+- service: name=cgred state=started enabled=yes
+  sudo: yes
+
+- template: src=RedHat/dhclient-eth0.conf.j2 dest=/etc/dhcp/dhclient-eth0.conf
+  sudo: yes
+  register: lxc_dhclient_eth0_config
+
+- include: RedHat-lxc-net.yml
+
+- template: src=RedHat/dnsmasq.lxc.conf.j2 dest=/etc/dnsmasq.d/lxc.conf
+  sudo: yes
+  register: lxc_dnsmasq_lxc_config
+
+- service: name=dnsmasq state=restarted
+  sudo: yes
+  when: lxc_dnsmasq_lxc_config|changed

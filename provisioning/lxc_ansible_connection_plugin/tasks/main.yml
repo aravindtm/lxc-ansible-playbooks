@@ -1,0 +1,15 @@
+---
+- include_vars: "{{ item }}"
+  with_first_found:
+  - "../vars/{{ ansible_distribution }}.yml"
+  - "../vars/{{ ansible_os_family }}.yml"
+  - "../vars/default.yml"
+
+- file: path=/etc/ansible/connection_plugins state=directory
+  sudo: yes
+
+- git: repo=https://github.com/Mic92/ansible-lxc dest=/etc/ansible/connection_plugins/lxc
+  sudo: yes
+
+- lineinfile: dest=/etc/ansible/ansible.cfg line="connection_plugins = {{ lxc_ansible_connection_plugins_standard_dir }}:/etc/ansible/connection_plugins/lxc" create=no
+  sudo: yes

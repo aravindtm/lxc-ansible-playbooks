@@ -1,6 +1,15 @@
 ---
 - apt: name=sysstat state=present
+  sudo: yes
+  when: ansible_os_family == "Debian"
 
-- copy: src=sysstat.default dest=/etc/default/sysstat
+- copy: src=Debian/sysstat.default dest=/etc/default/sysstat
+  sudo: yes
+  when: ansible_os_family == "Debian"
 
-- template: src=sysstat.cron.j2 dest=/etc/cron.d/sysstat
+- yum: name=sysstat state=present
+  sudo: yes
+  when: ansible_os_family == "RedHat"
+
+- template: src={{ ansible_os_family }}/sysstat.cron.j2 dest=/etc/cron.d/sysstat
+  sudo: yes
