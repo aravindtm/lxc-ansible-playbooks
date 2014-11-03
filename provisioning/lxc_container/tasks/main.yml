@@ -17,8 +17,8 @@
   sudo: yes
   register: lxc_container_running
   until: lxc_container_running.stdout.find(lxc_container_name) != -1
-  retries: 5
-  delay: 1
+  retries: 30
+  delay: 2
   changed_when: False
 
 - command: lxc-attach -n {{ lxc_container_name }} -- sudo apt-get install -y python
