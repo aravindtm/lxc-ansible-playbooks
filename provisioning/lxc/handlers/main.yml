@@ -1,8 +1,4 @@
 ---
-- name: restart eth0
-  sudo: yes
-  shell: ifdown eth0 && ifup eth0
-
 - name: restart lxc-net
   sudo: yes
-  service: name=lxc-net state=restarted
+  shell: service lxc-net stop && serivice lxc-net start

@@ -7,13 +7,19 @@
 
 - template: src=RedHat/lxc-net.sysconfig.j2 dest=/etc/sysconfig/lxc-net
   sudo: yes
-  notify:
-  - restart lxc-net
+  register: lxc_net_sysconfig
 
 - template: src=RedHat/lxc-net.init.j2 dest=/etc/init.d/lxc-net mode=0755
   sudo: yes
-  notify:
-  - restart lxc-net
+  register: lxc_net_initscript
 
-- service: name=lxc-net state=started
-#- service: name=lxc-net state=started enabled=yes
+- service: name=lxc-net state=started enabled=yes
+  sudo: yes
+
+- shell: service lxc-net stop && service lxc-net start
+  sudo: yes
+  when: lxc_net_sysconfig|changed or lxc_net_initscript|changed
+
+- service: name=dnsmasq state=restarted
+  sudo: yes
+  when: lxc_net_sysconfig|changed or lxc_net_initscript|changed
