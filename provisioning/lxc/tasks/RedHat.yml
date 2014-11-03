@@ -1,4 +1,14 @@
 ---
+# NOTE: Comment out unknown keys in /etc/sysctl.conf to avoid these errors
+# ==> default: error: "net.bridge.bridge-nf-call-ip6tables" is an unknown key
+# ==> default: error: "net.bridge.bridge-nf-call-iptables" is an unknown key
+# ==> default: error: "net.bridge.bridge-nf-call-arptables" is an unknown key
+- command: sed -ie 's/^net\.bridge\.bridge-nf-call-ip6tables/#&/;s/^net\.bridge\.bridge-nf-call-iptables/#&/;s/^net\.bridge\.bridge-nf-call-arptables/#&/' /etc/sysctl.conf
+  sudo: yes
+
+- sysctl: name=net.ipv4.ip_forward value=1 state=present
+  sudo: yes
+
 - yum: name={{ item }} state=present
   sudo: yes
   with_items:
@@ -8,9 +18,6 @@
   - bridge-utils
   - libcgroup
   - dnsmasq
-
-- sysctl: name=net.ipv4.ip_forward value=1 state=present
-  sudo: yes
 
 - template: src=RedHat/lxc.default.conf.j2 dest=/etc/lxc/default.conf
   sudo: yes
