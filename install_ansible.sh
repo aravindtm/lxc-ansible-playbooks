@@ -24,17 +24,27 @@ get_os_family() {
   esac
 }
 
-if [ ! -f /usr/local/bin/ansible ]; then
-  case `get_os_family` in
+os_family=`get_os_family`
+case $os_family in
+debian)
+  ansible_path=/usr/local/bin/ansible
+  ;;
+redhat)
+  ansible_path=/usr/bin/ansible
+  ;;
+*)
+  echo 'Unsupported OS family' 1>&2
+  exit 1
+  ;;
+esac
+
+if [ ! -f $ansible_path ]; then
+  case $os_family in
   debian)
     sudo apt-get install -y curl gcc python-dev
     ;;
   redhat)
     sudo yum install -y curl gcc python-devel
-    ;;
-  *)
-    echo 'Unsupported OS family' 1>&2
-    exit 1
     ;;
   esac
   curl -kL https://raw.github.com/pypa/pip/master/contrib/get-pip.py | sudo python
