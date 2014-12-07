@@ -6,7 +6,9 @@ server {
     error_log /var/log/nginx/{{ nginx_config_for_lxc_host_container_virtualhost }}.error.log;
 
     location / {
-        proxy_pass http://{{ nginx_config_for_lxc_host_container_name }};
+        resolver {{ lxc_bridge_addr }} valid={{ nginx_config_for_lxc_host_dns_cache_time }};
+        set ${{ nginx_config_for_lxc_host_container_name }}_ip "{{ nginx_config_for_lxc_host_container_name }}";
+        proxy_pass http://${{ nginx_config_for_lxc_host_container_name }}_ip;
         proxy_set_header Host $http_host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-Host $host;
