@@ -1,0 +1,2 @@
+---
+nginx_config_for_lxc_host_dns_cache_time: "2s"
