@@ -1,14 +1,4 @@
 ---
-- shell: lxc-attach -n {{ nginx_config_for_lxc_host_container_name }} -- ip a show eth0 | awk '$1=="inet" {sub(/\/[0-9]+/, ""); print $2}'
-  sudo: yes
-  register: nginx_config_for_lxc_host_container_ip_result
-  until: nginx_config_for_lxc_host_container_ip_result.stdout != ""
-  retries: 5
-  delay: 4
-  changed_when: False
-
-- set_fact: nginx_config_for_lxc_host_container_ip_address={{ nginx_config_for_lxc_host_container_ip_result.stdout }}
-
 - template: src=proxy_to_container.conf.j2 dest=/etc/nginx/conf.d/{{ nginx_config_for_lxc_host_container_name }}.conf
   sudo: yes
   notify: reload nginx
