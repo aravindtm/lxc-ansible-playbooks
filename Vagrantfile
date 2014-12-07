@@ -4,7 +4,8 @@
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "hnakamur/centos6.5-x64"
+  config.vm.box = "hnakamur/centos6.6-x64"
+  #config.vm.box = "hnakamur/ubuntu-14.04-x64"
   config.vm.network :private_network, ip: "192.168.33.2"
   config.vm.boot_timeout = 120
 
