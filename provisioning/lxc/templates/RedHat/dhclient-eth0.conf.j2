@@ -1,5 +1,5 @@
 # use dnsmasq dns server first.
-prepend domain-name-servers 10.0.3.1;
+prepend domain-name-servers {{ lxc_bridge_addr }};
 
 send vendor-class-identifier "anaconda-Linux {{ ansible_kernel }} {{ ansible_machine }}";
 timeout 45;
