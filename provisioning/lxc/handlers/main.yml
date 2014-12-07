@@ -2,3 +2,7 @@
 - name: restart lxc-net
   sudo: yes
   shell: service lxc-net stop && serivice lxc-net start
+
+- name: restart lxc bridge network
+  sudo: yes
+  shell: ifdown {{ lxc_bridge_out_if }} && ifup {{ lxc_bridge_out_if }}

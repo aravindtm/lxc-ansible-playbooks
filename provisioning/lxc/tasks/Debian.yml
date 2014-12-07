@@ -1,3 +1,7 @@
 ---
 - apt: name=lxc state=present
   sudo: yes
+
+- lineinfile: dest=/etc/dhcp/dhclient.conf line="prepend domain-name-servers {{ lxc_bridge_addr }};" insertafter="^#prepend domain-name-servers 127.0.0.1;"
+  notify: restart lxc bridge network
+  sudo: yes
