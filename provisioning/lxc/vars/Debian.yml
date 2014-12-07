@@ -1,0 +1,3 @@
+---
+lxc_bridge_addr: 10.0.3.1
+lxc_bridge_out_if: eth0
