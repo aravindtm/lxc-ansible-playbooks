@@ -29,8 +29,8 @@
   sudo: yes
 
 - template: src=RedHat/dhclient-eth0.conf.j2 dest=/etc/dhcp/dhclient-eth0.conf
+  notify: restart lxc_bridge_out_if
   sudo: yes
-  register: lxc_dhclient_eth0_config
 
 - include: RedHat-lxc-net.yml
 
